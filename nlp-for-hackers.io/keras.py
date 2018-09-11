@@ -55,3 +55,44 @@ N_FEATURES = len(vectorizer.get_feature_names())
 X_train_sequences = pad_sequences(X_train_sequences, maxlen=MAX_SEQ_LENGTH, value=N_FEATURES)
 print(X_train_sequences[0])
 
+from keras.models import Sequential
+from keras.layers import Dense, Con1D, MaxPooling1D, Flatten, Embedding
+model = Sequential()
+model.add(Embedding(len(vectorizer.get_feature_names())))+1, 
+                    64,
+                    input_length=MAX_SEQ_LENGTH))
+model.add(Conv1D(64, 5, activation='relu'))
+model.add(MaxPooling1D(5))
+model.add(Flatten())
+model.add(Dense(units=64, activation='relu'))
+model.add(Dense(units=1, activation='sigmoid'))
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+print(model.summary())
+
+model.fit(X_train_sequences[:-100], y_train[:-100],
+        epochs=3, batch_size=512, verbose=1,
+        validation_data=(X_train_sequences[-100:], y_train[-100:]))
+
+X_test_sequences = [to_sequence(tokenize, preprocess, word2idx, x)for x in X_test]
+X_test_sequences = pad_sequences(X_test_sequences, maxlen=MAX_SEQ_LENGTH, value=N_FEATURES)
+
+scores = model.evaluate(X_test_sequences, y_test, verbose=1)
+print(scores[1])
+
+## LSTM NETWORK
+from keras.models import Sequential
+from keras.layers import Dense, LSTM, Embedding 
+model = Sequential()
+model.add(Embedding(len(vectorizer.get_feature_names())+1,
+                    64,
+                    input_length=MAX_SEQ_LENGTH))
+model.add(LSTM(64))
+model.add(Dense(units=1, activation='sigmoid'))
+
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+print(model.summary())
+
+model.fit(X_train_sequences[:-100], y_train[:-100],
+        epochs=3, batch_size=512, verbose=1,
+        validation_data=(X_train_sequences[-100:], y_train[-100:]))
+
